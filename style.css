@@ -1,0 +1,101 @@
+* {
+ box-sizing: border-box;
+ 
+}
+
+body {
+  padding: 0;
+  margin: 0;
+  height: 100vh;
+  padding: 24px;
+}
+
+main {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  max-width: 600px;
+  width: 100%;
+  margin: auto;
+  font-family: sans-serif;
+  gap: 24px;
+  height: 100%;
+  overflow: hidden;
+}
+
+h1 {
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.board {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  justify-content: flex-start;
+  min-height: 0;
+  flex-grow: 1;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 4px;
+  min-height: 0;
+  flex-grow: 1;
+}
+
+.cell {
+  aspect-ratio: 1;
+  border: 4px gray solid;
+  min-width: 0;
+}
+.cell::after {
+  content: "";
+  padding-top: 100%;
+  display: block;
+}
+
+.keyboard .row {
+  justify-content: stretch;
+}
+.key {
+  flex-grow: 1;
+  border-radius: 4px;
+  background-color: gray;
+  color: white;
+  line-height: 0;
+  position: relative;
+}
+.key::after {
+  content: "";
+  padding-top: 100%;
+  display: block;
+}
+.key > div {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.keyboard {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 8px;
+}
+.key.enter, .key.del {
+  flex-grow: 1.5;
+  font-size: 12px;
+}
+.row.with-spacers::before, .row.with-spacers::after {
+  flex-grow: 0.5;
+  content: "";
+}
+.key.enter::after, .key.del::after {
+  display: none;
+}
+
+
