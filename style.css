@@ -1,65 +1,48 @@
 * {
- box-sizing: border-box;
- 
+  box-sizing: border-box;
+  background-color: black;
+  color: white;
 }
-
 body {
-  padding: 0;
   margin: 0;
-  height: 100vh;
-  padding: 24px;
+  height: 100%;
+  padding: 1em;
 }
 
 main {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
   max-width: 600px;
   width: 100%;
   margin: auto;
   font-family: sans-serif;
-  gap: 24px;
   height: 100%;
   overflow: hidden;
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+  gap: 1em;
 }
 
 h1 {
   text-align: center;
   text-transform: uppercase;
+  margin: 0;
 }
 
 .board {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  row-gap: 1em;
+  column-gap: 0.2em;
   justify-content: flex-start;
-  min-height: 0;
-  flex-grow: 1;
-}
-
-.row {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  gap: 4px;
-  min-height: 0;
-  flex-grow: 1;
+  align-self: center;
 }
 
 .cell {
-  aspect-ratio: 1;
-  border: 4px gray solid;
-  min-width: 0;
-}
-.cell::after {
-  content: "";
-  padding-top: 100%;
-  display: block;
+  border: 0.125em lightgray solid;
+  width: 4em;
+  height: 4em;
 }
 
-.keyboard .row {
-  justify-content: stretch;
-}
 .key {
   flex-grow: 1;
   border-radius: 4px;
@@ -79,12 +62,26 @@ h1 {
   display: flex;
   justify-content: center;
   align-items: center;
+  background-color: lightgray;
+  color: black;
 }
+.key > div:active {
+  border-style: inset;
+}
+.row {
+  display: flex;
+  flex-direction: row;
+  justify-content: stretch;
+  gap: 0.25em;
+  min-height: 0;
+  flex-grow: 1;
+}
+
 .keyboard {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  gap: 8px;
+  gap: 0.5em;
 }
 .key.enter, .key.del {
   flex-grow: 1.5;
