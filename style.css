@@ -7,19 +7,40 @@ body {
   margin: 0;
   height: 100%;
   padding: 1rem;
+  font-family: sans-serif;
 }
 
 main {
   max-width: 600px;
   width: 100%;
   margin: auto;
-  font-family: sans-serif;
   height: 100%;
   overflow: hidden;
   display: flex;
   justify-content: flex-start;
   flex-direction: column;
   gap: 1rem;
+}
+
+#endDialog form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1rem;
+}
+
+#endDialog #game {
+  text-align: center;
+}
+
+#endDialog button {
+  font-size: 1rem;
+}
+#endDialog::backdrop {
+  background: rgba(0, 0, 0, 0.5);
+}
+p {
+  margin: 0;
 }
 
 h1 {
@@ -60,6 +81,10 @@ h1 {
   transition: none;
 }
 
+.cell.bad, .key .bad {
+  background-color: gray;
+  color: white;
+}
 .cell.good, .key .good {
   background-color: orange;
   color: white;
@@ -68,25 +93,24 @@ h1 {
   background-color: green;
   color: white;
 }
-.cell.bad, .key .bad {
-  background-color: gray;
-  color: white;
-}
 
-.cell:is(.good, .bad, .position):nth-child(5n + 1) {
+body:not(.gameEnded) .cell:is(.good, .bad, .position):nth-child(5n + 1) {
   transition-delay: 0s;
 }
-.cell:is(.good, .bad, .position):nth-child(5n + 2) {
+body:not(.gameEnded) .cell:is(.good, .bad, .position):nth-child(5n + 2) {
   transition-delay: 0.4s;
 }
-.cell:is(.good, .bad, .position):nth-child(5n + 3) {
+body:not(.gameEnded) .cell:is(.good, .bad, .position):nth-child(5n + 3) {
   transition-delay: 0.8s;
 }
-.cell:is(.good, .bad, .position):nth-child(5n + 4) {
+body:not(.gameEnded) .cell:is(.good, .bad, .position):nth-child(5n + 4) {
   transition-delay: 1.2s;
 }
-.cell:is(.good, .bad, .position):nth-child(5n + 5) {
+body:not(.gameEnded) .cell:is(.good, .bad, .position):nth-child(5n + 5) {
   transition-delay: 1.6s;
+}
+body.gameEnded .cell {
+  transition: none;
 }
 
 .key {

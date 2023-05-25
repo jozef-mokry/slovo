@@ -19,6 +19,19 @@ function init() {
     });
   }
 
+  document.getElementById('copyGame').addEventListener('click', (e) => {
+    const winWordAscii = wordPairs[winWordIdx][1];
+    const gameColors = getStoredGame().map(guess => getColours(guess, winWordAscii).join(""));
+    navigator.clipboard.writeText(`Slovo\n${gameColors.join("\n")}`).then(() => {
+      e.target.innerText = "Skopírované!";
+      setTimeout(() => e.target.innerText = "Skopírovať", 2000);
+    }).catch(() => {
+      e.target.innerText = "Nedá sa";
+      setTimeout(() => e.target.innerText = "Skopírovať", 2000);
+    });
+  });
+
+
   restoreGame();
 }
 
@@ -74,8 +87,47 @@ function isWord(word) {
 
 function addWord(word, currIdx) {
   const [winWord, winWordAscii] = wordPairs[winWordIdx];
+  const colours = getColours(word, winWordAscii);
+  const addColorToKey = (cell, fn) => {
+    if (gameEnded) fn();
+    else cell.addEventListener('transitionend', fn);
+  };
+  for(let i = 0; i < word.length; i++) {
+    const cell = cells[currIdx - word.length + i];
+    if (colours[i] === GREEN) {
+      cell.classList.add('good');
+      cell.classList.add('position');
+      cell.innerText = winWord[i];
+      addColorToKey(cell, () => {
+        getKeyboardKey(word[i]).classList.add("good");
+        getKeyboardKey(word[i]).classList.add("position");
+      });
+    } else if (colours[i] === ORANGE) {
+      cell.classList.add('good');
+      cell.innerText = word[i];
+      addColorToKey(cell, () => {
+        getKeyboardKey(word[i]).classList.add("good");
+      });
+    } else {
+      cell.innerText = word[i];
+      cell.classList.add('bad');
+      const key = getKeyboardKey(word[i]);
+      addColorToKey(cell, () => {
+        key.classList.add('bad');
+      });
+    }
+  }
+}
+
+const GREEN = "🟩";
+const ORANGE = "🟨";
+const GRAY = "⬛";
+function getColours(word, winWordAscii) {
   const winLetters = new Map();
-  for(let i = 0; i < winWord.length; i++) {
+  for(let i = 0; i < winWordAscii.length; i++) {
+    if (word[i] === winWordAscii[i]) {
+      continue;
+    }
     const count = winLetters.get(winWordAscii[i]);
     if (count === undefined) {
       winLetters.set(winWordAscii[i], 1);
@@ -84,35 +136,19 @@ function addWord(word, currIdx) {
     }
   }
 
+  const colours = [];
   for(let i = 0; i < word.length; i++) {
     if (word[i] === winWordAscii[i]) {
-      const count = winLetters.get(word[i]);
-      winLetters.set(word[i], count - 1);
-    }
-  }
-  for(let i = 0; i < word.length; i++) {
-    const cell = cells[currIdx - word.length + i];
-    if (word[i] === winWordAscii[i]) {
-      cell.classList.add('good');
-      cell.classList.add('position');
-      cell.innerText = winWord[i];
-      getKeyboardKey(word[i]).classList.add("good");
-      getKeyboardKey(word[i]).classList.add("position");
+      colours.push(GREEN);
     } else if (winLetters.get(word[i]) > 0) {
+      colours.push(ORANGE);
       const count = winLetters.get(word[i]);
       winLetters.set(word[i], count - 1);
-      cell.classList.add('good');
-      cell.innerText = word[i];
-      getKeyboardKey(word[i]).classList.add("good");
     } else {
-      cell.innerText = word[i];
-      cell.classList.add('bad');
-      const key = getKeyboardKey(word[i]);
-      if (!key.classList.contains("good")) {
-        key.classList.add('bad');
-      }
+      colours.push(GRAY);
     }
   }
+  return colours;
 }
 
 function storeWordToLocalStorage(word) {
@@ -127,7 +163,15 @@ function getKeyboardKey(letter) {
 }
 
 function onWin() {
-  alert(`Congrats, you solved it in ${currIdx / 5} guesses`);
+  const dialog = document.getElementById("endDialog");
+  const game = document.getElementById("game");
+  dialog.showModal();
+  const guesses = getStoredGame();
+  const winWordAscii = wordPairs[winWordIdx][1];
+  for(const guess of guesses) {
+    const colours = getColours(guess, winWordAscii);
+    game.innerHTML += `<p>${colours.join("")}</p>`;
+  }
 }
 
 function getWinWordIdx() {
@@ -135,12 +179,14 @@ function getWinWordIdx() {
 }
 
 function onLose() {
-  alert(`Sorry, the word was: ${wordPairs[winWordIdx][0]}`);
+  onWin();
 }
 
+let _dateKey = null;
 function getDateKey() {
+  if (_dateKey !== null) return _dateKey;
   const d = new Date();
-  return `${d.getDate()}-${d.getYear() + 1900}-${d.getMonth()+1}`;
+  return _dateKey = `${d.getDate()}-${d.getYear() + 1900}-${d.getMonth()+1}`;
 }
 
 function hash(text) {
@@ -154,20 +200,30 @@ function hash(text) {
 }
 
 function restoreGame() {
+  const guesses = getStoredGame();
+  if (currIdx === cells.length || guesses[guesses.length - 1] === wordPairs[winWordIdx][1]) {
+    gameEnded = true;
+    document.body.classList.add("gameEnded");
+    onWin();
+  }
+
+  for(const guess of guesses) {
+    currIdx += guess.length;
+    addWord(guess, currIdx);
+  }
+
+  if (!gameEnded) {
+    cells[currIdx].classList.add('cursor');
+  }
+}
+
+function getStoredGame() {
   const key = getDateKey();
   let guesses = localStorage.getItem(key);
   if (guesses === null) {
     guesses = JSON.stringify([]);
     localStorage.setItem(key, guesses);
   }
-  guesses = JSON.parse(guesses);
-  for(const guess of guesses) {
-    currIdx += guess.length;
-    addWord(guess, currIdx);
-  }
-  if (currIdx === cells.length || guesses[guesses.length - 1] === wordPairs[winWordIdx][1]) {
-    gameEnded = true;
-  } else {
-    cells[currIdx].classList.add('cursor');
-  }
+  return JSON.parse(guesses);
 }
+
