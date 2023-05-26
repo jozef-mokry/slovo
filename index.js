@@ -165,6 +165,8 @@ function getKeyboardKey(letter) {
 function onWin() {
   const dialog = document.getElementById("endDialog");
   const game = document.getElementById("game");
+  const winWordElement = document.getElementById("winWord");
+  winWordElement.innerText = wordPairs[winWordIdx][0];
   dialog.showModal();
   const guesses = getStoredGame();
   const winWordAscii = wordPairs[winWordIdx][1];
@@ -201,7 +203,7 @@ function hash(text) {
 
 function restoreGame() {
   const guesses = getStoredGame();
-  if (currIdx === cells.length || guesses[guesses.length - 1] === wordPairs[winWordIdx][1]) {
+  if (guesses.length === 6 || guesses[guesses.length - 1] === wordPairs[winWordIdx][1]) {
     gameEnded = true;
     document.body.classList.add("gameEnded");
     onWin();
