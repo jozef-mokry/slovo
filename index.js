@@ -59,7 +59,9 @@ function onKeyPress(letter) {
       cells[currIdx].classList.add('cursor');
     }
   } else if (letter === 'Backspace' && currWord.length > 0) {
-    cells[currIdx].classList.remove('cursor')
+    if (currIdx < cells.length) {
+      cells[currIdx].classList.remove('cursor')
+    }
     currIdx -= 1;
     cells[currIdx].innerText = '';
     cells[currIdx].classList.add('cursor')
