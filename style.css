@@ -67,8 +67,12 @@ h1, h2 {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.cell.animated {
   transition: background-color 0.8s;
 }
+
 .word-row {
   display: contents;
 }
@@ -94,23 +98,20 @@ h1, h2 {
   color: white;
 }
 
-body:not(.gameEnded) .cell:is(.good, .bad, .position):nth-child(5n + 1) {
+.cell.animated:nth-child(5n + 1) {
   transition-delay: 0s;
 }
-body:not(.gameEnded) .cell:is(.good, .bad, .position):nth-child(5n + 2) {
+.cell.animated:nth-child(5n + 2) {
   transition-delay: 0.4s;
 }
-body:not(.gameEnded) .cell:is(.good, .bad, .position):nth-child(5n + 3) {
+.cell.animated:nth-child(5n + 3) {
   transition-delay: 0.8s;
 }
-body:not(.gameEnded) .cell:is(.good, .bad, .position):nth-child(5n + 4) {
+.cell.animated:nth-child(5n + 4) {
   transition-delay: 1.2s;
 }
-body:not(.gameEnded) .cell:is(.good, .bad, .position):nth-child(5n + 5) {
+.cell.animated:nth-child(5n + 5) {
   transition-delay: 1.6s;
-}
-body.gameEnded .cell {
-  transition: none;
 }
 
 .key {

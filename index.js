@@ -43,7 +43,7 @@ function onKeyPress(letter) {
     if (!isWord(currWord)) {
       return;
     }
-    addWord(currWord, currIdx);
+    addWord(currWord, currIdx, true);
     storeWordToLocalStorage(currWord);
     cells[currIdx-1].parentElement.classList.remove('nonexistent');
     cells[currIdx-1].parentElement.classList.remove('existent');
@@ -87,37 +87,41 @@ function isWord(word) {
   return wordPairs.some(([_, ascii]) => ascii === word);
 }
 
-function addWord(word, currIdx) {
+function addWord(word, currIdx, slowly) {
   const [winWord, winWordAscii] = wordPairs[winWordIdx];
   const colours = getColours(word, winWordAscii);
-  const addColorToKey = (cell, fn) => {
-    if (gameEnded) fn();
-    else cell.addEventListener('transitionend', fn);
-  };
+  const changeKeyColors = [];
+
   for(let i = 0; i < word.length; i++) {
     const cell = cells[currIdx - word.length + i];
+    cell.innerText = word[i];
+    if (slowly) {
+      cell.classList.add('animated');
+    }
     if (colours[i] === GREEN) {
-      cell.classList.add('good');
-      cell.classList.add('position');
-      cell.innerText = winWord[i];
-      addColorToKey(cell, () => {
-        getKeyboardKey(word[i]).classList.add("good");
-        getKeyboardKey(word[i]).classList.add("position");
-      });
+      cell.classList.add('good', 'position');
+      const fn = () => cell.innerText = winWord[i];
+      if (slowly) {
+        cell.addEventListener('transitionstart', fn);
+      } else {
+        fn();
+      }
+      changeKeyColors.push(()=> getKeyboardKey(word[i]).classList.add("good", "position"));
+
     } else if (colours[i] === ORANGE) {
       cell.classList.add('good');
-      cell.innerText = word[i];
-      addColorToKey(cell, () => {
-        getKeyboardKey(word[i]).classList.add("good");
-      });
+      changeKeyColors.push(()=> getKeyboardKey(word[i]).classList.add("good"));
     } else {
-      cell.innerText = word[i];
       cell.classList.add('bad');
-      const key = getKeyboardKey(word[i]);
-      addColorToKey(cell, () => {
-        key.classList.add('bad');
-      });
+      changeKeyColors.push(() => getKeyboardKey(word[i]).classList.add('bad'));
     }
+  }
+
+  // update keyboard keys
+  if (slowly) {
+    cells[currIdx-1].addEventListener('transitionend', () => changeKeyColors.forEach(fn => fn()));
+  } else {
+    changeKeyColors.forEach(fn => fn());
   }
 }
 
@@ -213,7 +217,7 @@ function restoreGame() {
 
   for(const guess of guesses) {
     currIdx += guess.length;
-    addWord(guess, currIdx);
+    addWord(guess, currIdx, false);
   }
 
   if (!gameEnded) {
