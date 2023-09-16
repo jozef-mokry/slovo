@@ -67,6 +67,8 @@ h1, h2 {
   display: flex;
   align-items: center;
   justify-content: center;
+  -webkit-user-select: none; /* Safari */
+  user-select: none;
 }
 
 .cell.animated {
@@ -121,6 +123,9 @@ h1, h2 {
   color: white;
   line-height: 0;
   position: relative;
+  -webkit-user-select: none; /* Safari */
+  user-select: none;
+  cursor: pointer;
 }
 .key::after {
   content: "";
