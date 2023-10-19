@@ -81,12 +81,9 @@ function onKeyPress(letter) {
     cells[currIdx-1].parentElement.classList.remove('nonexistent');
     cells[currIdx-1].parentElement.classList.remove('existent');
 
-    if (currWord === winWordAscii) {
+    if (currWord === winWordAscii || currIdx === cells.length) {
       gameEnded = true;
-      cells[currIdx-1].addEventListener('transitionend', onWin);
-    } else if (currIdx === cells.length) {
-      gameEnded = true;
-      cells[currIdx-1].addEventListener('transitionend', onLose);
+      cells[currIdx-1].addEventListener('transitionend', onGameEnded);
     } else {
       currWord = "";
       cells[currIdx].classList.add('cursor');
@@ -200,7 +197,7 @@ function getKeyboardKey(letter) {
   return Array.from(document.querySelectorAll(".key > div")).find(e => e.innerHTML === letter);
 }
 
-function onWin() {
+function onGameEnded() {
   const dialog = document.getElementById("endDialog");
   const game = document.getElementById("game");
   const winWordElement = document.getElementById("winWord");
@@ -213,22 +210,8 @@ function onWin() {
   }
 }
 
-function onLose() {
-  onWin();
-}
-
 function getDateKey() {
   return `${today.getDate()}-${today.getYear() + 1900}-${today.getMonth()+1}`;
-}
-
-function hash(text) {
-  let hash = 0;
-  for (let i = 0; i < text.length; i++) {
-    chr = text.charCodeAt(i);
-    hash = ((hash << 5) - hash) + chr;
-    hash |= 0; // Convert to 32bit integer
-  }
-  return hash;
 }
 
 function restoreGame() {
@@ -236,7 +219,7 @@ function restoreGame() {
   if (guesses.length === 6 || guesses[guesses.length - 1] === winWordAscii) {
     gameEnded = true;
     document.body.classList.add("gameEnded");
-    onWin();
+    onGameEnded();
   }
 
   for(const guess of guesses) {
