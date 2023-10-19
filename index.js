@@ -11,11 +11,6 @@ const MILLIS_IN_A_DAY = 1000 * 3600 * 24;
 // persist across midnight; require page refresh
 const today = new Date();
 
-// arbitrary old day
-const firstDay = new Date(today);
-firstDay.setFullYear(2023, 0, 1);
-firstDay.setHours(0, 0, 0, 0);
-
 let currIdx = 0;
 let cells;
 let currWord = "";
@@ -25,7 +20,9 @@ let winWordAscii;
 let allWordsAscii;
 
 function getWinWord() {
-    const daysSince = Math.floor((today - firstDay) / MILLIS_IN_A_DAY);
+    const todayUTC = new Date(Date.UTC(today.getYear() + 1900, today.getMonth(), today.getDate()));
+    const firstDayUTC = new Date(2023, 0, 1);
+    const daysSince = Math.floor((todayUTC - firstDayUTC) / MILLIS_IN_A_DAY);
     return allWords[daysSince % GOOD_WORDS];
 }
 
