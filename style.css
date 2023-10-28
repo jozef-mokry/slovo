@@ -21,7 +21,23 @@ main {
   gap: 0.5rem;
 }
 
-#endDialog form {
+#title {
+  position: relative;
+}
+#historyButton {
+  position: absolute;
+  top: 0;
+  right: 0;
+  border: none;
+  font-size: 28px;
+}
+#history {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 4px;
+}
+
+.dialog form {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -32,10 +48,10 @@ main {
   text-align: center;
 }
 
-#endDialog button {
+.dialog button {
   font-size: 1rem;
 }
-#endDialog::backdrop {
+.dialog::backdrop {
   background: rgba(0, 0, 0, 0.5);
 }
 p {

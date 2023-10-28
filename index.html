@@ -10,7 +10,10 @@
   </head>
   <body onload="init()">
     <main>
-        <h1>Slovo</h1>  
+        <div id="title">
+          <h1>Slovo</h1>  
+          <button id="historyButton">🗓</button>
+        </div>
         <div class="board">
           <div class="word-row">
             <div class="cell"></div>
@@ -92,7 +95,7 @@
           </div>
           
     </main>
-    <dialog id="endDialog">
+    <dialog id="endDialog" class="dialog">
       <form>
         <h2>Dnešná hra</h2>
         <p id="winWord"></p>
@@ -102,6 +105,14 @@
         <button id="close" formmethod="dialog">Zatvor</button>
       </form>
     </dialog>
+    <dialog id="historyDialog" class="dialog">
+      <form>
+        <h2>História</h2>
+        <div id="history"></div>
+        <button id="close" formmethod="dialog">Zatvor</button>
+      </form>
+    </dialog>
+
 
     <script src="index.js"></script>
   </body>

@@ -19,10 +19,10 @@ let winWord;
 let winWordAscii;
 let allWordsAscii;
 
-function getWinWord() {
-    const todayUTC = new Date(Date.UTC(today.getYear() + 1900, today.getMonth(), today.getDate()));
+function getWinWord(date) {
+    const dateUTC = new Date(Date.UTC(date.getYear() + 1900, date.getMonth(), date.getDate()));
     const firstDayUTC = new Date(2023, 0, 1);
-    const daysSince = Math.floor((todayUTC - firstDayUTC) / MILLIS_IN_A_DAY);
+    const daysSince = Math.floor((dateUTC - firstDayUTC) / MILLIS_IN_A_DAY);
     return allWords[daysSince % GOOD_WORDS];
 }
 
@@ -33,7 +33,7 @@ function removeAccents(word) {
 
 
 function init() {
-  winWord = getWinWord();
+  winWord = getWinWord(today);
   winWordAscii = removeAccents(winWord);
   allWordsAscii = new Set(allWords.map(w => removeAccents(w)));
   cells = document.querySelectorAll('.cell');
@@ -51,7 +51,7 @@ function init() {
   }
 
   document.getElementById('copyGame').addEventListener('click', (e) => {
-    const gameColors = getStoredGame().map(guess => getColours(guess, winWordAscii).join(""));
+    const gameColors = getStoredGame(today).map(guess => getColours(guess, winWordAscii).join(""));
     navigator.clipboard.writeText(`Slovo\n${gameColors.join("\n")}`).then(() => {
       e.target.innerText = "Skopírované!";
       setTimeout(() => e.target.innerText = "Skopírovať", 2000);
@@ -60,6 +60,8 @@ function init() {
       setTimeout(() => e.target.innerText = "Skopírovať", 2000);
     });
   });
+
+  document.getElementById('historyButton').addEventListener('click', onHistoryButtonClicked);
 
 
   restoreGame();
@@ -74,7 +76,7 @@ function onKeyPress(letter) {
       return;
     }
     addWord(currWord, currIdx, true);
-    storeWordToLocalStorage(currWord);
+    storeWordToLocalStorage(currWord, today);
     cells[currIdx-1].parentElement.classList.remove('nonexistent');
     cells[currIdx-1].parentElement.classList.remove('existent');
 
@@ -183,8 +185,8 @@ function getColours(word, winWordAscii) {
   return colours;
 }
 
-function storeWordToLocalStorage(word) {
-  const key = getDateKey();
+function storeWordToLocalStorage(word, date) {
+  const key = getDateKey(date);
   const guesses = JSON.parse(localStorage.getItem(key));
   guesses.push(word);
   localStorage.setItem(key, JSON.stringify(guesses));
@@ -200,19 +202,42 @@ function onGameEnded() {
   const winWordElement = document.getElementById("winWord");
   winWordElement.innerText = winWord;
   dialog.showModal();
-  const guesses = getStoredGame();
+  const guesses = getStoredGame(today);
   for(const guess of guesses) {
     const colours = getColours(guess, winWordAscii);
     game.innerHTML += `<p>${colours.join("")}</p>`;
   }
 }
 
-function getDateKey() {
-  return `${today.getDate()}-${today.getYear() + 1900}-${today.getMonth()+1}`;
+function onHistoryButtonClicked() {
+  const dialog = document.getElementById('historyDialog');
+  const history = document.getElementById('history');
+  history.innerHTML = "";
+
+  for(let i = 6; i >= 0; i-=1) {
+    const date = new Date(today);
+    date.setDate(date.getDate() - i);
+    const winWord = getWinWord(date);
+    const winWordAscii = removeAccents(winWord);
+    const guesses = getStoredGame(date);
+    const score =
+      guesses[guesses.length - 1] === winWordAscii
+      ? guesses.length
+      : guesses.length === 6 ? 7 : "-";
+    const displayWord = i !== 0 || score !== "-" ? winWord : "???";
+
+    history.innerHTML += `<span>${displayWord}</span><span>${score}</span>`;
+  }
+
+  dialog.showModal();
+}
+
+function getDateKey(date) {
+  return `${date.getDate()}-${date.getYear() + 1900}-${date.getMonth()+1}`;
 }
 
 function restoreGame() {
-  const guesses = getStoredGame();
+  const guesses = getStoredGame(today);
   if (guesses.length === 6 || guesses[guesses.length - 1] === winWordAscii) {
     gameEnded = true;
     document.body.classList.add("gameEnded");
@@ -229,8 +254,8 @@ function restoreGame() {
   }
 }
 
-function getStoredGame() {
-  const key = getDateKey();
+function getStoredGame(date) {
+  const key = getDateKey(date);
   let guesses = localStorage.getItem(key);
   if (guesses === null) {
     guesses = JSON.stringify([]);
