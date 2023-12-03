@@ -52,7 +52,7 @@ function init() {
   cells = document.querySelectorAll('.cell');
 
   // setup keyboard
-  document.addEventListener('keyup', (e) => onKeyPress(e.key))
+  document.addEventListener('keyup', (e) => onKeyPress(e.key));
   const keys = document.querySelectorAll('.key > div');
   for(const key of keys) {
     key.addEventListener('click', (e) => {
@@ -81,10 +81,18 @@ function init() {
 }
 
 function onKeyPress(letter) {
-  if (gameEnded) {
+  const dialog = document.getElementById("endDialog");
+  const historyDialog = document.getElementById("historyDialog");
+  if (dialog.open || historyDialog.open) {
     return;
   }
-  if (letter == 'Enter' && currWord.length === 5) {
+  if (gameEnded) {
+    if (letter === 'Enter') {
+      onGameEnded();
+    }
+    return;
+  }
+  if (letter === 'Enter' && currWord.length === 5) {
     if (!isWord(currWord)) {
       return;
     }
@@ -211,7 +219,11 @@ function getKeyboardKey(letter) {
 
 function onGameEnded() {
   const dialog = document.getElementById("endDialog");
+  if (dialog.open) {
+    return;
+  }
   const game = document.getElementById("game");
+  game.innerHTML = '';
   const winWordElement = document.getElementById("winWord");
   winWordElement.innerText = winWord;
   dialog.showModal();
