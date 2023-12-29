@@ -240,6 +240,7 @@ function onHistoryButtonClicked() {
   const dialog = document.getElementById('historyDialog');
   const history = document.getElementById('history');
   history.innerHTML = "";
+  const scores = [];
 
   for(let i = 6; i >= 0; i-=1) {
     const date = new Date(today);
@@ -251,10 +252,16 @@ function onHistoryButtonClicked() {
       guesses[guesses.length - 1] === winWordAscii
       ? guesses.length
       : guesses.length === 6 ? 7 : "-";
-    const displayWord = i !== 0 || score !== "-" ? winWord : "???";
+    if (score !== '-') {
+      scores.push(score);
+    }
+    const displayWord = i !== 0 ? winWord : "???";
 
     history.innerHTML += `<span>${displayWord}</span><span>${score}</span>`;
   }
+
+  const scoreAvg = scores.length == 0 ? "" : Number(scores.reduce((x,y) => x+y) / scores.length).toFixed(1);
+  history.innerHTML += `<span>Priemer:</span><span>${scoreAvg}`;
 
   dialog.showModal();
 }
