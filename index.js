@@ -64,8 +64,10 @@ function init() {
   }
 
   document.getElementById('copyGame').addEventListener('click', (e) => {
-    const gameColors = getStoredGame(today).map(guess => getColours(guess, winWordAscii).join(""));
-    navigator.clipboard.writeText(`Slovo\n${gameColors.join("\n")}`).then(() => {
+    const guesses = getStoredGame(today);
+    const gameColors = guesses.map(guess => getColours(guess, winWordAscii).join(""));
+    const score = guesses[guesses.length - 1] == winWordAscii ? guesses.length : guesses.length + 1;
+    navigator.clipboard.writeText(`Slovo\n${score}/6\n${gameColors.join("\n")}`).then(() => {
       e.target.innerText = "Skopírované!";
       setTimeout(() => e.target.innerText = "Skopírovať", 2000);
     }).catch(() => {
