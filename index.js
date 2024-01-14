@@ -106,6 +106,7 @@ function onKeyPress(letter) {
     if (currWord === winWordAscii || currIdx === cells.length) {
       gameEnded = true;
       cells[currIdx-1].addEventListener('transitionend', onGameEnded);
+      reportScore();
     } else {
       currWord = "";
       cells[currIdx].classList.add('cursor');
@@ -217,6 +218,21 @@ function storeWordToLocalStorage(word, date) {
 
 function getKeyboardKey(letter) {
   return Array.from(document.querySelectorAll(".key > div")).find(e => e.innerHTML === letter);
+}
+
+function reportScore() {
+  const guesses = getStoredGame(today);
+  const score =
+    guesses[guesses.length - 1] === winWordAscii
+    ? guesses.length
+    : guesses.length === 6 ? 7 : "-";
+  if (window.goatcounter && window.goatcounter.count) {
+    window.goatcounter.count({
+      path:  'game-end',
+      score: score,
+      event: true,
+    })
+  }
 }
 
 function onGameEnded() {
