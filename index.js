@@ -228,8 +228,7 @@ function reportScore() {
     : guesses.length === 6 ? 7 : "-";
   if (window.goatcounter && window.goatcounter.count) {
     window.goatcounter.count({
-      path:  'game-end',
-      score: score,
+      path:  `game-end/${getDateKey(today)}/${score}`,
       event: true,
     })
   }
